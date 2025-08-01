@@ -11,6 +11,17 @@
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
         }
+        .loading-spinner {
+            border-top-color: #3b82f6;
+            -webkit-animation: spin 1s linear infinite;
+            animation: spin 1s linear infinite;
+        }
+        @-webkit-keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
@@ -81,24 +92,20 @@
         </form>
 
         <div id="loading" class="hidden text-center mt-8">
-            <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
+            <div class="h-8 w-8 rounded-full border-4 border-gray-200 border-t-4 border-t-indigo-600 loading-spinner mx-auto"></div>
             <p class="mt-2 text-gray-600">Finding the best match...</p>
         </div>
 
         <div id="results-container" class="mt-8 p-6 rounded-lg bg-gray-50 hidden">
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Comparison Results</h3>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Comparison Results</h3>
             <div id="results-content"></div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DOM content loaded. Attaching event listener to the form.");
-
-            const nba_player_data = [
+            const nba_player_data_raw = [
+                // NBA player stats data from the user's original code
                 { "name": "Jayson Tatum", "PTS": 26.9, "TRB": 8.1, "AST": 4.9, "STL": 1.0, "BLK": 0.6, "TOV": 2.9, "PF": 2.2, "FG%": 0.471, "3P%": 0.372, "FT%": 0.849 },
                 { "name": "Kevin Durant", "PTS": 27.1, "TRB": 6.8, "AST": 5.0, "STL": 0.7, "BLK": 1.2, "TOV": 3.1, "PF": 1.6, "FG%": 0.523, "3P%": 0.413, "FT%": 0.856 },
                 { "name": "Stephen Curry", "PTS": 26.4, "TRB": 4.5, "AST": 5.1, "STL": 0.9, "BLK": 0.4, "TOV": 2.8, "PF": 2.0, "FG%": 0.450, "3P%": 0.408, "FT%": 0.923 },
@@ -130,15 +137,57 @@
                 { "name": "Anfernee Simons", "PTS": 22.6, "TRB": 3.6, "AST": 5.5, "STL": 0.6, "BLK": 0.2, "TOV": 2.0, "PF": 1.8, "FG%": 0.430, "3P%": 0.385, "FT%": 0.871 },
                 { "name": "Alex Caruso", "PTS": 10.1, "TRB": 3.8, "AST": 3.5, "STL": 1.7, "BLK": 1.0, "TOV": 1.0, "PF": 2.1, "FG%": 0.468, "3P%": 0.408, "FT%": 0.771 }
             ];
+            
+            // Stats to be used for comparison
+            const stats_to_compare = ["PTS", "TRB", "AST", "STL", "BLK", "TOV", "PF", "FG%", "3P%", "FT%"];
 
             const form = document.getElementById('stats-form');
             const loading = document.getElementById('loading');
             const resultsContainer = document.getElementById('results-container');
             const resultsContent = document.getElementById('results-content');
             
+            // Function to normalize all data points
+            function normalizeData(data, stats) {
+                const normalizedData = [];
+                const maxValues = {};
+                
+                // Find the max value for each stat across all players
+                stats.forEach(stat => {
+                    maxValues[stat] = Math.max(...data.map(player => player[stat]));
+                });
+                
+                // Normalize each player's stats
+                data.forEach(player => {
+                    const normalizedPlayer = { ...player };
+                    stats.forEach(stat => {
+                        normalizedPlayer[stat] = player[stat] / maxValues[stat];
+                    });
+                    normalizedData.push(normalizedPlayer);
+                });
+                
+                return normalizedData;
+            }
+            
+            // Function to calculate Euclidean distance between two players' normalized stats
+            function calculateEuclideanDistance(college, nba, stats) {
+                let sum_of_squares = 0;
+                
+                stats.forEach(stat => {
+                    const college_val = college[stat];
+                    const nba_val = nba[stat];
+
+                    if (typeof college_val === 'number' && typeof nba_val === 'number') {
+                        sum_of_squares += (college_val - nba_val) ** 2;
+                    }
+                });
+                return Math.sqrt(sum_of_squares);
+            }
+
+            // Normalize the NBA player data once on page load
+            const normalized_nba_data = normalizeData(nba_player_data_raw, stats_to_compare);
+            
             if (form) {
                 form.addEventListener('submit', (e) => {
-                    console.log("Form submission event fired. Preventing default page reload.");
                     e.preventDefault();
 
                     // Show loading indicator and hide previous results
@@ -146,7 +195,7 @@
                     resultsContainer.classList.add('hidden');
 
                     const form_data = e.target;
-                    const college_stats = {
+                    const college_stats_raw = {
                         'PTS': parseFloat(form_data.pts.value) || 0,
                         'TRB': parseFloat(form_data.trb.value) || 0,
                         'AST': parseFloat(form_data.ast.value) || 0,
@@ -158,51 +207,66 @@
                         '3P%': parseFloat(form_data['3p_pct'].value) || 0,
                         'FT%': parseFloat(form_data.ft_pct.value) || 0
                     };
-                    console.log("Collected college stats:", college_stats);
 
-                    function calculateEuclideanDistance(college, nba) {
-                        const stats_to_compare = ["PTS", "TRB", "AST", "STL", "BLK", "TOV", "PF", "FG%", "3P%", "FT%"];
-                        let sum_of_squares = 0;
-                        
-                        stats_to_compare.forEach(stat => {
-                            const college_val = college[stat];
-                            const nba_val = nba[stat];
+                    // Combine college and NBA data to find max values for normalization
+                    const all_stats_raw = [...nba_player_data_raw, college_stats_raw];
+                    const normalized_all_stats = normalizeData(all_stats_raw, stats_to_compare);
 
-                            if (typeof college_val === 'number' && typeof nba_val === 'number') {
-                                sum_of_squares += (college_val - nba_val) ** 2;
-                            }
-                        });
-                        return Math.sqrt(sum_of_squares);
-                    }
+                    // The last entry in the normalized data is the college player
+                    const normalized_college_stats = normalized_all_stats.pop();
 
                     let best_match = null;
                     let min_distance = Infinity;
+                    const comparisons = [];
                     
                     // Find the most similar NBA player
-                    nba_player_data.forEach(nba_player => {
-                        const distance = calculateEuclideanDistance(college_stats, nba_player);
-                        console.log(`Comparing with ${nba_player.name}: Distance = ${distance}`);
+                    normalized_nba_data.forEach(nba_player => {
+                        const distance = calculateEuclideanDistance(normalized_college_stats, nba_player, stats_to_compare);
+                        comparisons.push({ name: nba_player.name, distance: distance });
+
                         if (distance < min_distance) {
                             min_distance = distance;
                             best_match = nba_player;
                         }
                     });
+                    
+                    // Sort the comparisons to show the top 5
+                    comparisons.sort((a, b) => a.distance - b.distance);
+                    const top_matches = comparisons.slice(0, 5);
 
                     // Display results
                     loading.classList.add('hidden');
                     resultsContainer.classList.remove('hidden');
                     
                     if (best_match) {
-                        resultsContent.innerHTML = `
-                            <p class="text-lg">Based on your stats, the best NBA comparison is: 
-                                <strong class="text-indigo-600">${best_match.name}</strong> with a statistical distance of 
-                                <strong class="text-indigo-600">${min_distance.toFixed(4)}</strong>.
-                            </p>
+                        let tableHtml = `
+                            <p class="text-lg mb-4">Based on your stats, here are the top 5 most similar NBA players:</p>
+                            <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                                <thead class="bg-gray-200">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Player</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statistical Distance</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
                         `;
-                        console.log("Results displayed successfully.");
+                        top_matches.forEach((match, index) => {
+                            tableHtml += `
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">${index + 1}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${match.name}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">${match.distance.toFixed(4)}</td>
+                                </tr>
+                            `;
+                        });
+                        tableHtml += `
+                                </tbody>
+                            </table>
+                        `;
+                        resultsContent.innerHTML = tableHtml;
                     } else {
                         resultsContent.innerHTML = `<p class="text-lg text-red-600">Could not find a suitable NBA comparison.</p>`;
-                        console.error("Comparison result was null or empty.");
                     }
                 });
             } else {
