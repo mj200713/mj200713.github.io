@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College-to-NBA Player Comparator</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full">
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-6">College-to-NBA Player Comparator</h1>
+        <p class="text-center text-gray-600 mb-8">
+            Enter a college player's stats to find their best NBA career comparison.
+        </p>
+        
+        <form id="stats-form" class="space-y-6">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">College Player Stats</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Column 1 -->
+                <div class="space-y-4">
+                    <div>
+                        <label for="pts" class="block text-sm font-medium text-gray-700">Points (PTS)</label>
+                        <input type="number" id="pts" name="pts" step="0.1" min="0" value="23.2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    </div>
+                    <div>
+                        <label for="trb" class="block text-sm font-medium text-gray-700">Total Rebounds (TRB)</label>
+                        <input type="number" id="trb" name="trb" step="0.1" min="0" value="8.9" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    </div>
+                    <div>
+                        <label for="ast" class="block text-sm font-medium text-gray-700">Assists (AST)</label>
+                        <input type="number" id="ast" name="ast" step="0.1" min="0" value="2.1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    </div>
+                    <div>
+                        <label for="stl" class="block text-sm font-medium text-gray-700">Steals (STL)</label>
+                        <input type="number" id="stl" name="stl" step="0.1" min="0" value="2.1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    </div>
+                    <div>
+                        <label for="blk" class="block text-sm font-medium text-gray-700">Blocks (BLK)</label>
+                        <input type="number" id="blk" name="blk" step="0.1" min="0" value="1.8" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="space-y-4">
+                    <div>
+                        <label for="tov" class="block text-sm font-medium text-gray-700">Turnovers (TOV)</label>
+                        <input type="number" id="tov" name="tov" step="0.1" min="0" value="2.4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    </div>
+                    <div>
+                        <label for="pf" class="block text-sm font-medium text-gray-700">Personal Fouls (PF)</label>
+                        <input type="number" id="pf" name="pf" step="0.1" min="0" value="2.1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    </div>
+                    <div>
+                        <label for="fg_pct" class="block text-sm font-medium text-gray-700">Field Goal % (FG%)</label>
+                        <input type="number" id="fg_pct" name="fg_pct" step="0.001" min="0" max="1" value="0.680" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    </div>
+                    <div>
+                        <label for="3p_pct" class="block text-sm font-medium text-gray-700">3-Point % (3P%)</label>
+                        <input type="number" id="3p_pct" name="3p_pct" step="0.001" min="0" max="1" value="0.338" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    </div>
+                    <div>
+                        <label for="ft_pct" class="block text-sm font-medium text-gray-700">Free Throw % (FT%)</label>
+                        <input type="number" id="ft_pct" name="ft_pct" step="0.001" min="0" max="1" value="0.640" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <button type="submit" id="compare-button" class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                    Find Best Comparison
+                </button>
+            </div>
+        </form>
+
+        <div id="loading" class="hidden text-center mt-8">
+            <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-2 text-gray-600">Finding the best match...</p>
+        </div>
+
+        <div id="results-container" class="mt-8 p-6 rounded-lg bg-gray-50 hidden">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Comparison Results</h3>
+            <div id="results-content"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM content loaded. Attaching event listener to the form.");
+
+            const nba_player_data = [
+                { "name": "Jayson Tatum", "PTS": 26.9, "TRB": 8.1, "AST": 4.9, "STL": 1.0, "BLK": 0.6, "TOV": 2.9, "PF": 2.2, "FG%": 0.471, "3P%": 0.372, "FT%": 0.849 },
+                { "name": "Kevin Durant", "PTS": 27.1, "TRB": 6.8, "AST": 5.0, "STL": 0.7, "BLK": 1.2, "TOV": 3.1, "PF": 1.6, "FG%": 0.523, "3P%": 0.413, "FT%": 0.856 },
+                { "name": "Stephen Curry", "PTS": 26.4, "TRB": 4.5, "AST": 5.1, "STL": 0.9, "BLK": 0.4, "TOV": 2.8, "PF": 2.0, "FG%": 0.450, "3P%": 0.408, "FT%": 0.923 },
+                { "name": "LeBron James", "PTS": 25.7, "TRB": 7.3, "AST": 8.3, "STL": 1.3, "BLK": 0.5, "TOV": 3.5, "PF": 1.6, "FG%": 0.540, "3P%": 0.410, "FT%": 0.750 },
+                { "name": "Nikola Jokic", "PTS": 26.4, "TRB": 12.4, "AST": 9.0, "STL": 1.4, "BLK": 0.9, "TOV": 3.2, "PF": 2.8, "FG%": 0.583, "3P%": 0.347, "FT%": 0.817 },
+                { "name": "Damian Lillard", "PTS": 26.8, "TRB": 4.5, "AST": 7.0, "STL": 1.0, "BLK": 0.3, "TOV": 2.8, "PF": 1.6, "FG%": 0.424, "3P%": 0.354, "FT%": 0.921 },
+                { "name": "Joel Embiid", "PTS": 34.1, "TRB": 11.2, "AST": 5.6, "STL": 1.2, "BLK": 1.7, "TOV": 3.6, "PF": 3.0, "FG%": 0.529, "3P%": 0.366, "FT%": 0.883 },
+                { "name": "Luka Doncic", "PTS": 33.9, "TRB": 9.2, "AST": 9.8, "STL": 1.4, "BLK": 0.5, "TOV": 4.0, "PF": 2.6, "FG%": 0.487, "3P%": 0.382, "FT%": 0.786 },
+                { "name": "Shai Gilgeous-Alexander", "PTS": 30.1, "TRB": 5.5, "AST": 6.2, "STL": 2.0, "BLK": 0.9, "TOV": 2.2, "PF": 2.1, "FG%": 0.535, "3P%": 0.353, "FT%": 0.865 },
+                { "name": "Kawhi Leonard", "PTS": 23.7, "TRB": 6.1, "AST": 3.6, "STL": 1.6, "BLK": 0.9, "TOV": 1.6, "PF": 1.5, "FG%": 0.525, "3P%": 0.417, "FT%": 0.885 },
+                { "name": "Giannis Antetokounmpo", "PTS": 30.4, "TRB": 11.5, "AST": 6.5, "STL": 1.2, "BLK": 1.1, "TOV": 3.4, "PF": 3.2, "FG%": 0.611, "3P%": 0.274, "FT%": 0.656 },
+                { "name": "Zion Williamson", "PTS": 22.9, "TRB": 5.8, "AST": 5.0, "STL": 1.1, "BLK": 0.7, "TOV": 3.2, "PF": 2.8, "FG%": 0.583, "3P%": 0.333, "FT%": 0.672 },
+                { "name": "Anthony Edwards", "PTS": 25.9, "TRB": 5.4, "AST": 5.1, "STL": 1.2, "BLK": 0.6, "TOV": 3.2, "PF": 2.1, "FG%": 0.461, "3P%": 0.357, "FT%": 0.836 },
+                { "name": "Ja Morant", "PTS": 25.1, "TRB": 5.0, "AST": 8.1, "STL": 1.0, "BLK": 0.5, "TOV": 3.7, "PF": 1.8, "FG%": 0.489, "3P%": 0.353, "FT%": 0.744 },
+                { "name": "De'Aaron Fox", "PTS": 26.6, "TRB": 4.6, "AST": 5.6, "STL": 1.8, "BLK": 0.4, "TOV": 2.6, "PF": 2.9, "FG%": 0.472, "3P%": 0.369, "FT%": 0.738 },
+                { "name": "Donovan Mitchell", "PTS": 26.6, "TRB": 5.1, "AST": 6.1, "STL": 1.8, "BLK": 0.5, "TOV": 2.9, "PF": 1.9, "FG%": 0.462, "3P%": 0.368, "FT%": 0.865 },
+                { "name": "Tyrese Haliburton", "PTS": 20.1, "TRB": 3.9, "AST": 10.9, "STL": 1.2, "BLK": 0.7, "TOV": 2.3, "PF": 1.5, "FG%": 0.477, "3P%": 0.404, "FT%": 0.852 },
+                { "name": "Paolo Banchero", "PTS": 22.6, "TRB": 6.9, "AST": 5.4, "STL": 0.9, "BLK": 0.6, "TOV": 3.1, "PF": 2.7, "FG%": 0.455, "3P%": 0.371, "FT%": 0.727 },
+                { "name": "Trae Young", "PTS": 26.1, "TRB": 2.8, "AST": 10.8, "STL": 1.3, "BLK": 0.2, "TOV": 4.4, "PF": 1.9, "FG%": 0.423, "3P%": 0.371, "FT%": 0.855 },
+                { "name": "Scottie Barnes", "PTS": 19.9, "TRB": 8.2, "AST": 6.1, "STL": 1.3, "BLK": 1.5, "TOV": 2.7, "PF": 2.4, "FG%": 0.475, "3P%": 0.341, "FT%": 0.781 },
+                { "name": "Kyle Kuzma", "PTS": 22.2, "TRB": 6.6, "AST": 4.2, "STL": 0.5, "BLK": 0.6, "TOV": 3.0, "PF": 2.4, "FG%": 0.463, "3P%": 0.339, "FT%": 0.775 },
+                { "name": "LaMelo Ball", "PTS": 23.9, "TRB": 8.4, "AST": 8.2, "STL": 1.4, "BLK": 0.5, "TOV": 3.6, "PF": 3.0, "FG%": 0.443, "3P%": 0.376, "FT%": 0.864 },
+                { "name": "Jalen Green", "PTS": 19.6, "TRB": 5.2, "AST": 3.5, "STL": 0.8, "BLK": 0.3, "TOV": 2.6, "PF": 2.5, "FG%": 0.423, "3P%": 0.354, "FT%": 0.809 },
+                { "name": "Victor Wembanyama", "PTS": 21.4, "TRB": 10.6, "AST": 3.9, "STL": 1.2, "BLK": 3.6, "TOV": 3.7, "PF": 3.0, "FG%": 0.465, "3P%": 0.325, "FT%": 0.796 },
+                { "name": "Derrick White", "PTS": 15.2, "TRB": 4.2, "AST": 5.2, "STL": 1.0, "BLK": 1.2, "TOV": 1.7, "PF": 2.7, "FG%": 0.461, "3P%": 0.396, "FT%": 0.902 },
+                { "name": "Jalen Brunson", "PTS": 28.7, "TRB": 3.6, "AST": 6.7, "STL": 0.9, "BLK": 0.2, "TOV": 2.4, "PF": 2.5, "FG%": 0.479, "3P%": 0.401, "FT%": 0.847 },
+                { "name": "Mikal Bridges", "PTS": 19.6, "TRB": 4.5, "AST": 3.6, "STL": 1.0, "BLK": 0.6, "TOV": 1.7, "PF": 2.6, "FG%": 0.436, "3P%": 0.372, "FT%": 0.814 },
+                { "name": "Dejounte Murray", "PTS": 22.5, "TRB": 5.3, "AST": 6.4, "STL": 1.4, "BLK": 0.3, "TOV": 2.9, "PF": 1.7, "FG%": 0.459, "3P%": 0.363, "FT%": 0.795 },
+                { "name": "Anfernee Simons", "PTS": 22.6, "TRB": 3.6, "AST": 5.5, "STL": 0.6, "BLK": 0.2, "TOV": 2.0, "PF": 1.8, "FG%": 0.430, "3P%": 0.385, "FT%": 0.871 },
+                { "name": "Alex Caruso", "PTS": 10.1, "TRB": 3.8, "AST": 3.5, "STL": 1.7, "BLK": 1.0, "TOV": 1.0, "PF": 2.1, "FG%": 0.468, "3P%": 0.408, "FT%": 0.771 }
+            ];
+
+            const form = document.getElementById('stats-form');
+            const loading = document.getElementById('loading');
+            const resultsContainer = document.getElementById('results-container');
+            const resultsContent = document.getElementById('results-content');
+            
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    console.log("Form submission event fired. Preventing default page reload.");
+                    e.preventDefault();
+
+                    // Show loading indicator and hide previous results
+                    loading.classList.remove('hidden');
+                    resultsContainer.classList.add('hidden');
+
+                    const form_data = e.target;
+                    const college_stats = {
+                        'PTS': parseFloat(form_data.pts.value) || 0,
+                        'TRB': parseFloat(form_data.trb.value) || 0,
+                        'AST': parseFloat(form_data.ast.value) || 0,
+                        'STL': parseFloat(form_data.stl.value) || 0,
+                        'BLK': parseFloat(form_data.blk.value) || 0,
+                        'TOV': parseFloat(form_data.tov.value) || 0,
+                        'PF': parseFloat(form_data.pf.value) || 0,
+                        'FG%': parseFloat(form_data.fg_pct.value) || 0,
+                        '3P%': parseFloat(form_data['3p_pct'].value) || 0,
+                        'FT%': parseFloat(form_data.ft_pct.value) || 0
+                    };
+                    console.log("Collected college stats:", college_stats);
+
+                    function calculateEuclideanDistance(college, nba) {
+                        const stats_to_compare = ["PTS", "TRB", "AST", "STL", "BLK", "TOV", "PF", "FG%", "3P%", "FT%"];
+                        let sum_of_squares = 0;
+                        
+                        stats_to_compare.forEach(stat => {
+                            const college_val = college[stat];
+                            const nba_val = nba[stat];
+
+                            if (typeof college_val === 'number' && typeof nba_val === 'number') {
+                                sum_of_squares += (college_val - nba_val) ** 2;
+                            }
+                        });
+                        return Math.sqrt(sum_of_squares);
+                    }
+
+                    let best_match = null;
+                    let min_distance = Infinity;
+                    
+                    // Find the most similar NBA player
+                    nba_player_data.forEach(nba_player => {
+                        const distance = calculateEuclideanDistance(college_stats, nba_player);
+                        console.log(`Comparing with ${nba_player.name}: Distance = ${distance}`);
+                        if (distance < min_distance) {
+                            min_distance = distance;
+                            best_match = nba_player;
+                        }
+                    });
+
+                    // Display results
+                    loading.classList.add('hidden');
+                    resultsContainer.classList.remove('hidden');
+                    
+                    if (best_match) {
+                        resultsContent.innerHTML = `
+                            <p class="text-lg">Based on your stats, the best NBA comparison is: 
+                                <strong class="text-indigo-600">${best_match.name}</strong> with a statistical distance of 
+                                <strong class="text-indigo-600">${min_distance.toFixed(4)}</strong>.
+                            </p>
+                        `;
+                        console.log("Results displayed successfully.");
+                    } else {
+                        resultsContent.innerHTML = `<p class="text-lg text-red-600">Could not find a suitable NBA comparison.</p>`;
+                        console.error("Comparison result was null or empty.");
+                    }
+                });
+            } else {
+                console.error("Form element with ID 'stats-form' not found.");
+            }
+        });
+    </script>
+</body>
+</html>
